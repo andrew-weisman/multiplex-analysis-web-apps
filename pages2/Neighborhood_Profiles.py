@@ -1047,6 +1047,12 @@ def main():
         st.session_state['nei_pro_dfs'] = df_list
         st.session_state['suffix_list'] = suffix_list
 
+        # Download Subplots Button
+        with supp_neipro_col[1]:
+            if st.button('Save All Subplots to Output Folder'):
+                for i, nei_pro_df in enumerate(st.session_state['nei_pro_dfs']):
+                    print(f"Saving neighborhood profile: {st.session_state['suffix_list'][i]}")
+                    nei_pro_df.to_csv(f"./output/neighborhood_profiles_{st.session_state['datafile']}_{st.session_state['suffix_list'][i]}.csv", index=False)
 
         plot_title = ''
         for i in title_supp:
