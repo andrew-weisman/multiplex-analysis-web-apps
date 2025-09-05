@@ -921,6 +921,10 @@ def main():
     # Drawing the subplots of Neighborhood Profiles per cluster combinations
     if st.session_state['appro_feat'] and st.session_state.cluster_completed_diff:
 
+        # Save all the nei_pro_dfs in a list
+        if 'nei_pro_dfs' not in st.session_state:
+            st.session_state['nei_pro_dfs'] = []
+
         supp_neipro_col = st.columns([4, 2])
         with supp_neipro_col[0]:
             with st.expander('Neighborhood Profile Subplots Settings', expanded = False):
@@ -993,6 +997,7 @@ def main():
         num_figs = len(list_figures)
         num_cols = 3
         num_rows = np.ceil(num_figs/3).astype(int)
+        df_list = []
         for ii, cluster in enumerate(list_figures):
             axii = npf_fig_big.add_subplot(num_rows, 3, ii+1, facecolor = '#0E1117')
 
@@ -1009,6 +1014,10 @@ def main():
                                                     hide_other = st.session_state['toggle_hide_other'],
                                                     hide_no_cluster = st.session_state['toggle_hide_no_cluster'],
                                                     legend_flag = legend_flag)
+
+            # Save all the nei_pro_df in a list
+            df_list.append(nei_pro_df)
+
 
             if st.session_state['toggle_manual_y_axis_scaling_supplemental']:
                 if cluster[2] == 'Individual Cluster Plots':
@@ -1028,6 +1037,8 @@ def main():
                         axii.set_yscale('log')
             else:
                 axii.set_yscale('log')
+
+        st.session_state['nei_pro_dfs'] = df_list
 
         plot_title = ''
         for i in title_supp:
