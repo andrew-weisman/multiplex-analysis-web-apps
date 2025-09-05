@@ -924,6 +924,7 @@ def main():
         # Save all the nei_pro_dfs in a list
         if 'nei_pro_dfs' not in st.session_state:
             st.session_state['nei_pro_dfs'] = []
+            st.session_state['suffix_list'] = []
 
         supp_neipro_col = st.columns([4, 2])
         with supp_neipro_col[0]:
@@ -998,6 +999,7 @@ def main():
         num_cols = 3
         num_rows = np.ceil(num_figs/3).astype(int)
         df_list = []
+        suffix_list = []
         for ii, cluster in enumerate(list_figures):
             axii = npf_fig_big.add_subplot(num_rows, 3, ii+1, facecolor = '#0E1117')
 
@@ -1018,6 +1020,10 @@ def main():
             # Save all the nei_pro_df in a list
             df_list.append(nei_pro_df)
 
+            if cluster[1] is not None:
+                suffix_list.append(f"{cluster[0]}_vs_{cluster[1]}")
+            else:
+                suffix_list.append(f"{cluster[0]}")
 
             if st.session_state['toggle_manual_y_axis_scaling_supplemental']:
                 if cluster[2] == 'Individual Cluster Plots':
@@ -1039,6 +1045,8 @@ def main():
                 axii.set_yscale('log')
 
         st.session_state['nei_pro_dfs'] = df_list
+        st.session_state['suffix_list'] = suffix_list
+
 
         plot_title = ''
         for i in title_supp:
