@@ -885,12 +885,12 @@ def main():
                 npf_fig, ax = bpl.draw_scatter_fig(figsize=(14, 16))
 
                 nei_pro_df = bpl.draw_neigh_profile_fig(st.session_state.spatial_umap,
-                                           ax = ax,
-                                           sel_clus = st.session_state['sel_npf_fig'],
-                                           cmp_clus = st.session_state['sel_npf_fig2'],
-                                           cmp_style=st.session_state['compare_clusters_as'],
-                                           hide_other = st.session_state['toggle_hide_other'],
-                                           hide_no_cluster = st.session_state['toggle_hide_no_cluster'])
+                                                        ax = ax,
+                                                        sel_clus = st.session_state['sel_npf_fig'],
+                                                        cmp_clus = st.session_state['sel_npf_fig2'],
+                                                        cmp_style=st.session_state['compare_clusters_as'],
+                                                        hide_other = st.session_state['toggle_hide_other'],
+                                                        hide_no_cluster = st.session_state['toggle_hide_no_cluster'])
 
                 if st.session_state['nei_pro_toggle_log_scale']:
                     ax.set_yscale('log')
@@ -989,6 +989,7 @@ def main():
                         ['Right Cluster 3', 'Average Left', 'Aggregate Cluster Ratios'],
                         ]
 
+        # Create subplots
         num_figs = len(list_figures)
         num_cols = 3
         num_rows = np.ceil(num_figs/3).astype(int)
@@ -1000,14 +1001,14 @@ def main():
             else:
                 legend_flag = False
 
-            bpl.draw_neigh_profile_fig(st.session_state.spatial_umap,
-                                       ax = axii,
-                                       sel_clus = cluster[0],
-                                       cmp_clus = cluster[1],
-                                       cmp_style = 'Ratio',
-                                       hide_other = st.session_state['toggle_hide_other'],
-                                       hide_no_cluster = st.session_state['toggle_hide_no_cluster'],
-                                       legend_flag = legend_flag)
+            nei_pro_df = bpl.draw_neigh_profile_fig(st.session_state.spatial_umap,
+                                                    ax = axii,
+                                                    sel_clus = cluster[0],
+                                                    cmp_clus = cluster[1],
+                                                    cmp_style = 'Ratio',
+                                                    hide_other = st.session_state['toggle_hide_other'],
+                                                    hide_no_cluster = st.session_state['toggle_hide_no_cluster'],
+                                                    legend_flag = legend_flag)
 
             if st.session_state['toggle_manual_y_axis_scaling_supplemental']:
                 if cluster[2] == 'Individual Cluster Plots':
