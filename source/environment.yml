@@ -1,0 +1,16 @@
+channels:
+  - conda-forge
+  - defaults
+channel_priority: strict
+dependencies:
+  - python=3.12.11
+  - streamlit=1.49.1
+  - psycopg2=2.9.10
+  - pyyaml=6.0.2
+  - dill=0.4.0
+  - git=2.51.0
+  - requests=2.32.5
+  - minio=7.2.16
+  - polars=1.33.0
+  - snowflake-snowpark-python=1.38.0
+  - pyarrow==18.1.0  # need this due to warning from snowflake-snowpark-python about needing pyarrow < 19.0.0

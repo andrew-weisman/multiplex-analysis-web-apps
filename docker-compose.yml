@@ -1,0 +1,82 @@
+services:
+  frontend:
+    image: frontend
+    container_name: streamlit
+    build:
+      context: .
+      dockerfile: streamlit/Dockerfile
+    ports:
+      - "8501:8501"
+    restart: unless-stopped
+    depends_on:
+      - database
+      - object_storage
+    environment:
+      DATABASE_URL: postgresql://postgres:password@database:5432/main_db
+      TZ: America/New_York
+      MINIO_ENDPOINT: minio:9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin123
+      ARCHIVES_BUCKET_NAME: archives
+      JOB_INPUTS_BUCKET_NAME: inputs
+      JOB_OUTPUTS_BUCKET_NAME: outputs
+      APP_USER: ${USER}  # Delete this (and modify get_current_username()) in the future when we implement running the container as non-root.
+      APP_PLATFORM: local
+    stop_grace_period: 1s
+
+  database:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_DB: main_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      TZ: America/New_York
+      PGTZ: America/New_York
+    ports:
+      - "5432:5432"
+    volumes:
+      - database_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  object_storage:
+    image: minio/minio:latest
+    container_name: minio
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+      TZ: America/New_York
+    ports:
+      - "9000:9000"  # API for Python app.
+      - "9001:9001"  # Web console for humans (http://localhost:9001 using the credentials above).
+    volumes:
+      - object_data:/data
+    command: server /data --console-address ":9001"
+    restart: unless-stopped
+
+  docker_orchestrator:
+    image: orchestrator
+    container_name: docker_orchestrator
+    build:
+      context: .
+      dockerfile: docker_orchestrator/Dockerfile
+    environment:
+      # Worker image to launch (reuses frontend image for parity)
+      WORKER_IMAGE: frontend  ## ENSURE THIS MATCHES FRONTEND IMAGE NAME
+      WORKER_CPUS: "16.0"
+      WORKER_MEM: "8g"
+      # Pass-through envs required by the worker
+      DATABASE_URL: postgresql://postgres:password@database:5432/main_db
+      TZ: America/New_York
+      MINIO_ENDPOINT: minio:9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin123
+      ARCHIVES_BUCKET_NAME: archives
+      JOB_INPUTS_BUCKET_NAME: inputs
+      JOB_OUTPUTS_BUCKET_NAME: outputs
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:rw
+
+volumes:
+  database_data:
+  object_data:
